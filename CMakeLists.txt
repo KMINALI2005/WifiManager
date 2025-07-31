@@ -7,19 +7,21 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# البحث عن Qt6 (بدون Charts مؤقتاً)
-find_package(Qt6 6.2 REQUIRED COMPONENTS Core Widgets Network)
+# البحث عن Qt6 مع Charts
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core Widgets Network Charts)
 
 # تعريف الملفات المصدر
 set(SOURCES
     src/main.cpp
     src/mainwindow.cpp
     src/wifimanager.cpp
+    src/networkstats.cpp
 )
 
 set(HEADERS
     src/mainwindow.h
     src/wifimanager.h
+    src/networkstats.h
 )
 
 # إنشاء التطبيق التنفيذي
@@ -34,6 +36,7 @@ target_link_libraries(WifiManager
     Qt6::Core
     Qt6::Widgets
     Qt6::Network
+    Qt6::Charts
 )
 
 # تضمين المجلدات
