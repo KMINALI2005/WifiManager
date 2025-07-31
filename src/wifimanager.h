@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QNetworkInterface>
+#include <QDateTime>
 #include <memory>
 #include <vector>
 
@@ -13,10 +14,10 @@ struct Device {
     QString ipAddress;
     QString hostname;
     QString manufacturer;
-    double signalStrength;
-    qint64 bytesReceived;
-    qint64 bytesSent;
-    bool isActive;
+    double signalStrength = 0.0;
+    qint64 bytesReceived = 0;
+    qint64 bytesSent = 0;
+    bool isActive = false;
     QDateTime lastSeen;
 };
 
@@ -25,9 +26,10 @@ struct NetworkInfo {
     QString bssid;
     QString password;
     QString encryption;
-    int channel;
-    int frequency;
-    double signalStrength;
+    int channel = 0;
+    int frequency = 0;
+    double signalStrength = 0.0;
+    QString interface;
 };
 
 class WifiManager : public QObject {
@@ -56,6 +58,10 @@ public:
     qint64 getTotalBandwidthUsage();
     double getCurrentSpeed();
     
+    // فحص المتطلبات
+    bool checkSystemRequirements();
+    QStringList getMissingTools();
+
 public slots:
     void refreshDevices();
     void startMonitoring();
@@ -72,11 +78,19 @@ private:
     std::unique_ptr<QTimer> m_refreshTimer;
     NetworkInfo m_currentNetwork;
     std::vector<Device> m_devices;
+    QString m_activeInterface;
     
     void parseConnectedDevices(const QString &output);
     void updateDeviceInfo(Device &device);
     QString executeCommand(const QString &command);
     bool requiresRoot() const;
+    bool isCommandAvailable(const QString &command) const;
+    QString getActiveWifiInterface() const;
+    QString getManufacturer(const QString &macAddress) const;
+    QString getHostname(const QString &ipAddress) const;
+    std::vector<Device> scanWithNmap();
+    std::vector<Device> scanWithArpScan();
+    std::vector<Device> scanWithArpTable();
 };
 
 #endif // WIFIMANAGER_H
